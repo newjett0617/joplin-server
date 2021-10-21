@@ -9,36 +9,29 @@ x-basic-setting: &basic-setting
       max-size: "2G"
       max-file: "2"
       compress: "true"
-  healthcheck:
-    test: [ "CMD-SHELL", "curl --fail http://localhost" ]
-    interval: 30s
-    timeout: 30s
-    start_period: 10s
-    retries: 3
-
-volumes:
-  my-volume:
-    name: my-volume
-    driver: local
 
 networks:
-  my-network:
-    name: my-network
-    driver: bridge
-    internal: true
+  reverse_proxy:
+    external: true
+  pgsql:
+    external: true
 
 services:
-  my-app:
+  joplin:
     <<: *basic-setting
-    image: docker.io/library/nginx:alpine
-    container_name: my-app
+    image: docker.io/joplin/server:2.4
+    container_name: joplin
     networks:
-      - my-network
+      - reverse_proxy
+      - pgsql
     expose:
-      - 80
-    ports:
-      - 80:80
+      - 22300
     environment:
-      - foo=bar
-    volumes:
-      - my-volume:/etc/nginx:rw
+      - APP_PORT=22300
+      - APP_BASE_URL=${APP_BASE_URL}
+      - DB_CLIENT=pg
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
