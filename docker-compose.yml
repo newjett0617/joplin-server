@@ -19,7 +19,7 @@ networks:
 services:
   joplin:
     <<: *basic-setting
-    image: docker.io/joplin/server:2.4
+    image: docker.io/joplin/server:2.6.10-beta
     container_name: joplin
     networks:
       - reverse_proxy
